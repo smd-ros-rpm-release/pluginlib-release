@@ -1,0 +1,16 @@
+Source: ros-groovy-pluginlib
+Section: misc
+Priority: extra
+Maintainer: Dirk Thomas <dthomas@willowgarage.com>
+Build-Depends: debhelper (>= 7.0.50~), libtinyxml-dev,ros-groovy-catkin,ros-groovy-ros-comm,ros-groovy-ros
+Homepage: http://www.ros.org/wiki/pluginlib
+Standards-Version: 3.9.2
+
+Package: ros-groovy-pluginlib
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libtinyxml-dev,ros-groovy-ros-comm,ros-groovy-ros
+Description: The pluginlib package provides tools for writing and dynamically loading plugins using the ROS build infrastructure. To work, these tools require plugin providers to register their plugins in the manifest.xml of their package. Pluginlib includes parts of Poco from pocoproject.org
+ .
+ This stack contains the packages:
+ * pluginlib: The pluginlib package provides tools for writing and dynamically loading plugins using the ROS build infrastructure. To work, these tools require plugin providers to register their plugins in the manifest.xml of their package. Pluginlib includes parts of Poco from pocoproject.org
+
