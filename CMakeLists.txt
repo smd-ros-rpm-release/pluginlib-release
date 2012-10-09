@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.3)
 project(pluginlib)
 
 find_package(catkin REQUIRED COMPONENTS
@@ -12,7 +12,7 @@ catkin_package(
   DEPENDS rosconsole roslib
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 set(${PROJECT_NAME}_SRCS
   src/ASCIIEncoding.cpp
