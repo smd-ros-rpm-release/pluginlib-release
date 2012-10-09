@@ -2,12 +2,12 @@ Source: ros-groovy-pluginlib
 Section: misc
 Priority: extra
 Maintainer: Dirk Thomas <dthomas@willowgarage.com>
-Build-Depends: debhelper (>= 7.0.50~), libboost1.46-all-dev,ros-groovy-catkin,ros-groovy-rostime,libtinyxml-dev,ros-groovy-roslib,ros-groovy-rosconsole
+Build-Depends: debhelper (>= 7.0.50~), ros-groovy-catkin,libboost-all-dev,ros-groovy-rostime,libtinyxml-dev,ros-groovy-roslib,ros-groovy-rosconsole
 Homepage: http://www.ros.org/wiki/pluginlib
 Standards-Version: 3.9.2
 
 Package: ros-groovy-pluginlib
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-rostime,libtinyxml-dev,ros-groovy-roslib,ros-groovy-rosconsole,libboost1.46-all-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-groovy-rostime,libtinyxml-dev,ros-groovy-roslib,libboost-all-dev,ros-groovy-rosconsole
 Description: The pluginlib package provides tools for writing and dynamically loading plugins using the ROS build infrastructure. To work, these tools require plugin providers to register their plugins in the package.xml of their package.
 
