@@ -44,8 +44,12 @@
 #include <stdexcept>
 #include <class_loader/class_loader.h>
 #include "boost/filesystem.hpp"
+#include "ros/package.h"
 
 namespace pluginlib {
+
+
+
   template <class T>
   ClassLoader<T>::ClassLoader(std::string package, std::string base_class, std::string attrib_name) :
   package_(package),
@@ -390,15 +394,20 @@ namespace pluginlib {
   T* ClassLoader<T>::createUnmanagedInstance(const std::string& lookup_name)
   /***************************************************************************/
   {
+    ROS_ERROR("Attempting to create unmanged instance...\n");
+    ROS_ERROR("Loading library for class %s...\n", lookup_name.c_str());
     loadLibraryForClass(lookup_name);
 
     T* instance = 0;
     try
     {
+      ROS_ERROR("Attempting to create instance through low level multi-library class loader.\n");
       instance = lowlevel_class_loader_.createUnmanagedInstance<T>(getClassType(lookup_name));
+      ROS_DEBUG("Instance created.\n");
     }
     catch(const class_loader::CreateClassException& ex) //mas - change exception type here (DONE)
     {
+      ROS_ERROR("Uh oh, we got a problem. class_loader::CreateClassException, forwarding exception up the chain.\n");
       std::string error_string = "The class " + lookup_name + " could not be loaded. Error: " + ex.what();
       // call unload library to keep load/unload counting consistent
       unloadLibraryForClass(lookup_name);
@@ -418,7 +427,10 @@ namespace pluginlib {
   std::map<std::string, ClassDesc> ClassLoader<T>::determineAvailableClasses()
   /***************************************************************************/
   {
+    //mas - This method requires major refactoring...not only is it really long and confusing but a lot of the comments do not seem to be correct. With time I keep correcting small things, but a good rewrite is needed. We can also get rid of this libboost_fs_wrapper stuff as well which seems unnecessary.
+  
     std::map<std::string, ClassDesc> classes_available;
+    
     //Pull possible files from manifests of packages which depend on this package and export class
     std::vector<std::string> paths;
     ros::package::getPlugins(package_, attrib_name_, paths);
@@ -428,7 +440,7 @@ namespace pluginlib {
       throw LibraryLoadException(error_string);
     }
 
-    //The poco factory for base class T
+    //Walk the list of all plugin XML files (variable "paths") that are exported by the build system
     for (std::vector<std::string>::iterator it = paths.begin(); it != paths.end(); ++it)
     {
       TiXmlDocument document;
@@ -462,10 +474,9 @@ namespace pluginlib {
           continue;
         }
 
-        std::string package_name = pluginlib::getPackageFromLibraryPath(*it);
+        std::string package_name = getPackageFromPluginXMLFilePath(*it);
         if (package_name == "")
-          ROS_ERROR("Could not find package name for class %s", it->c_str());
-
+          ROS_ERROR("Could not find package manifest (neither package.xml or deprectated manifest.xml) at same directory level as the plugin XML file %s. Plugins will likely not be exported properly.\n)", it->c_str());
 
         TiXmlElement* class_element = library->FirstChildElement("class");
         while (class_element)
@@ -517,6 +528,55 @@ namespace pluginlib {
     return "According to the loaded plugin descriptions the class " + lookup_name 
       + " with base class type " + base_class_ + " does not exist. Declared types are " + declared_types;
   }
+
+  template <class T>
+  std::string ClassLoader<T>::joinPaths(const std::string& path1, const std::string& path2)
+  /***************************************************************************/
+  {
+    boost::filesystem::path p1(path1);
+    return (p1 / path2).string();
+  }
+
+  template <class T>
+  std::string ClassLoader<T>::getPackageFromPluginXMLFilePath(const std::string & path)
+ /***************************************************************************/  
+  {
+    std::string package_name;
+
+    boost::filesystem::path p(path);
+    boost::filesystem::path parent = p.parent_path();
+    // figure out the package this class is part of
+    while (true)
+    {
+      if ((boost::filesystem::exists(parent / "manifest.xml")) || (boost::filesystem::exists(parent / "package.xml")))
+      {
+  #if BOOST_FILESYSTEM_VERSION && BOOST_FILESYSTEM_VERSION == 3
+        std::string package = parent.filename().string();
+  #else
+        std::string package = parent.filename();
+  #endif
+        std::string package_path = ros::package::getPath(package);
+        if (path.find(package_path) == 0)
+        {
+          package_name = package;
+          break;
+        }
+      }
+
+  #if BOOST_FILESYSTEM_VERSION && BOOST_FILESYSTEM_VERSION == 3
+      parent = parent.parent_path().string();
+  #else
+      parent = parent.parent_path();
+  #endif
+
+      if (parent.string().empty())
+      {
+        return "";
+      }
+    }
+
+    return package_name;
+  }  
 };
 
 #endif
