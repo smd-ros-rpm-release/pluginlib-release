@@ -7,11 +7,11 @@ find_package(Boost REQUIRED COMPONENTS filesystem system)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tinyxml
-  DEPENDS class_loader rosconsole roslib
-  DEPENDS Boost COMPONENTS filesystem system
+  CATKIN_DEPENDS class_loader rosconsole roslib
+  DEPENDS Boost
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_library(test_plugins EXCLUDE_FROM_ALL SHARED test/test_plugins.cpp)
 catkin_add_gtest(${PROJECT_NAME}_utest test/utest.cpp)
