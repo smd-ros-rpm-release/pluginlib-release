@@ -14,13 +14,20 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 add_library(test_plugins EXCLUDE_FROM_ALL SHARED test/test_plugins.cpp)
+add_executable(plugin_tool src/plugin_tool.cpp)
+target_link_libraries(plugin_tool ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+
 catkin_add_gtest(${PROJECT_NAME}_utest test/utest.cpp)
 target_link_libraries(${PROJECT_NAME}_utest tinyxml ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(${PROJECT_NAME}_utest test_plugins)
 
-install(TARGETS
+install(TARGETS plugin_tool
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
 install(DIRECTORY include/pluginlib/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
+
+install(DIRECTORY share/pluginlib/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
