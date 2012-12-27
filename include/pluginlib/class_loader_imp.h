@@ -40,11 +40,12 @@
 #define PLUGINLIB_CLASS_LOADER_IMP_H_
 
 #include "boost/bind.hpp"
-#include <list>
-#include <stdexcept>
-#include <class_loader/class_loader.h>
 #include "boost/filesystem.hpp"
+#include <class_loader/class_loader.h>
+#include <list>
 #include "ros/package.h"
+#include <sstream>
+#include <stdexcept>
 
 namespace pluginlib 
 {
@@ -296,10 +297,14 @@ namespace pluginlib
     ROS_DEBUG("pluginlib::ClassLoader: Class %s maps to library %s in classes_available_.", lookup_name.c_str(), library_name.c_str());
 
     std::vector<std::string> paths_to_try = getAllLibraryPathsToTry(library_name, it->second.package_);
+
+    ROS_DEBUG("pluginlib::ClassLoader: Iterating through all possible paths where %s could be located...", library_name.c_str());
     for(std::vector<std::string>::const_iterator it = paths_to_try.begin(); it != paths_to_try.end(); it++)
     {
+      ROS_DEBUG("pluginlib::ClassLoader: Checking path %s ", it->c_str());
       if (boost::filesystem::exists(*it))
       {
+        ROS_DEBUG("pluginlib::ClassLoader: Library %s found at explicit path %s.", library_name.c_str(), it->c_str());
         return *it;
       }
     }
@@ -465,7 +470,10 @@ namespace pluginlib
     std::string library_path = getClassLibraryPath(lookup_name);
     if (library_path == "")
     {
-      throw pluginlib::LibraryLoadException("Could not find library.");
+      ROS_DEBUG("pluginlib::ClassLoader: No path could be found to the library containing %s.", lookup_name.c_str());
+      std::ostringstream error_msg;
+      error_msg << "Could not find library corresponding to plugin " << lookup_name << ". Make sure the plugin description XML file has the correct name of the library and that the library actually exists.";
+      throw pluginlib::LibraryLoadException(error_msg.str());
     }
 
     try
@@ -474,7 +482,7 @@ namespace pluginlib
     }
     catch(const class_loader::LibraryLoadException& ex)
     {
-      std::string error_string = "Failed to load library " + library_path + ". Make sure that you are calling the PLUGINLIB_REGISTER_CLASS macro in the library code, and that names are consistent between this macro and your XML. Error string: " + ex.what();
+      std::string error_string = "Failed to load library " + library_path + ". Make sure that you are calling the PLUGINLIB_EXPORT_CLASS macro in the library code, and that names are consistent between this macro and your XML. Error string: " + ex.what();
       throw pluginlib::LibraryLoadException(error_string);
     }
   }
@@ -504,18 +512,19 @@ namespace pluginlib
   void ClassLoader<T>::processSingleXMLPluginFile(const std::string& xml_file, std::map<std::string, ClassDesc>& classes_available)
   /***************************************************************************/
   {
+    ROS_DEBUG("pluginlib::ClassLoader: Processing xml file %s...", xml_file.c_str());
     TiXmlDocument document;
     document.LoadFile(xml_file);
     TiXmlElement * config = document.RootElement();
     if (config == NULL)
     {
-      ROS_ERROR("Skipping XML Document \"%s\" which had no Root Element.  This likely means the XML is malformed or missing.", xml_file.c_str());
+      ROS_ERROR("pluginlib::ClassLoader: Skipping XML Document \"%s\" which had no Root Element.  This likely means the XML is malformed or missing.", xml_file.c_str());
       return;
     }
     if (config->ValueStr() != "library" &&
         config->ValueStr() != "class_libraries")
     {
-      ROS_ERROR("The XML document \"%s\" given to add must have either \"library\" or \
+      ROS_ERROR("pluginlib::ClassLoader: The XML document \"%s\" given to add must have either \"library\" or \
           \"class_libraries\" as the root tag", xml_file.c_str());
       return;
     }
@@ -531,13 +540,13 @@ namespace pluginlib
       std::string library_path = library->Attribute("path");
       if (library_path.size() == 0)
       {
-        ROS_ERROR("Failed to find Path Attirbute in library element in %s", xml_file.c_str());
+        ROS_ERROR("pluginlib::ClassLoader: Failed to find Path Attirbute in library element in %s", xml_file.c_str());
         continue;
       }
 
       std::string package_name = getPackageFromPluginXMLFilePath(xml_file);
       if (package_name == "")
-        ROS_ERROR("Could not find package manifest (neither package.xml or deprecated manifest.xml) at same directory level as the plugin XML file %s. Plugins will likely not be exported properly.\n)", xml_file.c_str());
+        ROS_ERROR("pluginlib::ClassLoader: Could not find package manifest (neither package.xml or deprecated manifest.xml) at same directory level as the plugin XML file %s. Plugins will likely not be exported properly.\n)", xml_file.c_str());
 
       TiXmlElement* class_element = library->FirstChildElement("class");
       while (class_element)
@@ -548,11 +557,14 @@ namespace pluginlib
         std::string lookup_name;
         if(class_element->Attribute("name") != NULL)
         {
-          ROS_DEBUG("XML file has no lookup name (i.e. magic name) for class %s, assuming lookup_name == real class name.", derived_class.c_str());
           lookup_name = class_element->Attribute("name");
+          ROS_DEBUG("pluginlib::ClassLoader: XML file specifies lookup name (i.e. magic name) = %s.", lookup_name.c_str());          
         }
         else
+        {
+          ROS_DEBUG("pluginlib::ClassLoader: XML file has no lookup name (i.e. magic name) for class %s, assuming lookup_name == real class name.", derived_class.c_str());
           lookup_name = derived_class;
+        }
 
         //make sure that this class is of the right type before registering it
         if(base_class_type == base_class_){
