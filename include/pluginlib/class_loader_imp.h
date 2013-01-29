@@ -57,13 +57,16 @@ namespace pluginlib
   lowlevel_class_loader_(false) //NOTE: The parameter to the class loader enables/disables on-demand class loading/unloading. Leaving it off for now...libraries will be loaded immediately and won't be unloaded until class loader is destroyed or force unload.
   /***************************************************************************/
   {
+    ROS_DEBUG("pluginlib::ClassLoader: Creating ClassLoader, base = %s, address = %p", base_class.c_str(), this);
     classes_available_ = determineAvailableClasses();
+    ROS_DEBUG("pluginlib::ClassLoader: Finished constructring ClassLoader, base = %s, address = %p", base_class.c_str(), this);
   }
 
   template <class T>
   ClassLoader<T>::~ClassLoader()
   /***************************************************************************/
   {
+    ROS_DEBUG("pluginlib::ClassLoader: Destroying ClassLoader, base = %s, address = %p", getBaseClassType().c_str(), this);
   }
 
   template <class T>
@@ -388,7 +391,11 @@ namespace pluginlib
       }
       else if (boost::filesystem::exists(parent / "manifest.xml"))
       {
+#if BOOST_FILESYSTEM_VERSION >= 3
         std::string package = parent.filename().string();
+#else
+        std::string package = parent.filename();
+#endif
         std::string package_path = ros::package::getPath(package);
 
         if (plugin_xml_file_path.find(package_path) == 0) //package_path is a substr of passed plugin xml path
@@ -413,7 +420,11 @@ namespace pluginlib
   std::string ClassLoader<T>::getPathSeparator()
   /***************************************************************************/
   {
+#if BOOST_FILESYSTEM_VERSION >= 3
     return(boost::filesystem::path("/").native());
+#else
+    return(boost::filesystem::path("/").external_file_string());
+#endif
   }
 
 
