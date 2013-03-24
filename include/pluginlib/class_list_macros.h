@@ -32,26 +32,38 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *
-* Author: Eitan Marder-Eppstein
 *********************************************************************/
+
 #ifndef PLUGINLIB_CLASS_LIST_MACROS_H_
 #define PLUGINLIB_CLASS_LIST_MACROS_H_
-#include "Poco/ClassLibrary.h"
 
-inline __attribute__((deprecated)) void PLUGINLIB_REGISTER_CLASS (){
-// "You are using a deprecated version of the PLUGINLIB_REGISTER_CLASS macro. Please switch to the new version PLUGINLIB_DECLARE_CLASS. For further information, see http://ros.org/wiki/pluginlib"
-  return;
-};
+#include <class_loader/class_loader.h> 
 
+/** 
+ * @macro This version was deprecated in favor of PLUGINLIB_DECLARE_CLASS
+ * @param - class_name - An alias for the class (no special characters allowed)  (IGNORED AS OF PLUGINLIB 1.9)
+ * @param - class_type - The real class name with namespace qualifier (e.g. Animals::Lion)
+ * @param - base_class_type - The real base class type from which class_type inherits
+ */
 #define PLUGINLIB_REGISTER_CLASS(class_name, class_type, base_class_type) \
-  POCO_BEGIN_NAMED_MANIFEST(class_name, base_class_type) \
-  POCO_EXPORT_CLASS(class_type) \
-  PLUGINLIB_REGISTER_CLASS();   \
-  POCO_END_MANIFEST             
+  CLASS_LOADER_REGISTER_CLASS_WITH_MESSAGE(class_type, base_class_type, "pluginlib WARNING: PLUGINLIB_REGISTER_CLASS is deprecated, please use PLUGINLIB_EXPORT_CLASS instead. You can run the script 'plugin_macro_update' provided with pluginlib in your package source folder to automatically and recursively update legacy macros. Base = base_class_type, Derived = derived_class_type")
 
+/** 
+ * @macro This version is the most in use and requires package name in addition to fields in PLUGINLIB_REGISTER_CLASS 
+ * @param - pkg - The package that exports the plugin (IGNORED AS OF PLUGINLIB 1.9)
+ * @param - class_name - An alias for the class (no special characters allowed)  (IGNORED AS OF PLUGINLIB 1.9)
+ * @param - class_type - The real class name with namespace qualifier (e.g. Animals::Lion)
+ * @param - base_class_type - The real base class type from which class_type inherits
+ */
 #define PLUGINLIB_DECLARE_CLASS(pkg, class_name, class_type, base_class_type) \
-  POCO_BEGIN_NAMED_MANIFEST(pkg##__##class_name, base_class_type) \
-  POCO_EXPORT_CLASS(class_type) \
-  POCO_END_MANIFEST
+  CLASS_LOADER_REGISTER_CLASS_WITH_MESSAGE(class_type, base_class_type, "pluginlib WARNING: PLUGINLIB_DECLARE_CLASS is deprecated, please use PLUGINLIB_EXPORT_CLASS instead. You can run the script 'plugin_macro_update' provided with pluginlib in your package source folder to automatically and recursively update legacy macros.  Base = base_class_type, Derived = derived_class_type")            
+  
+/** 
+ * @macro This version was only made possible with pluginlib 1.9 series. It's the easiest to use and now the official way of exporting classes.
+ * @param - class_type - The real class name with namespace qualifier (e.g. Animals::Lion)
+ * @param - base_class_type - The real base class type from which class_type inherits
+ */
+#define PLUGINLIB_EXPORT_CLASS(class_type, base_class_type) \
+  CLASS_LOADER_REGISTER_CLASS(class_type, base_class_type);
 
 #endif

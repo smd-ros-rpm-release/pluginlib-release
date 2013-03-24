@@ -83,6 +83,10 @@ TEST(PluginlibTest, brokenPlugin)
     SUCCEED();
     return;
   }
+  catch(class_loader::ClassLoaderException& ex)
+  {
+    FAIL() << "class_loader exception instead of pluginlib, argh. " << ex.what() << "\n";
+  }
   catch(...)
   {
     FAIL() << "Uncaught exception";
@@ -105,7 +109,7 @@ TEST(PluginlibTest, workingPlugin)
   }
   catch(pluginlib::PluginlibException& ex)
   {
-    FAIL() << "Throwing exception";
+    FAIL() << "Throwing exception: " << ex.what();
     return;
   }
   catch(...)
