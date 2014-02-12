@@ -1,5 +1,24 @@
 ## pluginlib - 1.9.23-0
 
+User `dthomas@drudge` released the packages in the `pluginlib` repository by running `/usr/bin/bloom-release -r indigo -t indigo pluginlib` on `Wed, 12 Feb 2014 23:33:31 -0000`
+
+The `pluginlib` package was released.
+
+Version of package(s) in repository `pluginlib`:
+- rosdistro version: `null`
+- old version: `None-0`
+- new version: `1.9.23-0`
+
+Versions of tools used:
+- bloom version: `0.4.9`
+- catkin_pkg version: `0.1.26`
+- rosdep version: `0.10.25`
+- rosdistro version: `0.3.4`
+- vcstools version: `0.1.33`
+
+
+## pluginlib - 1.9.23-0
+
 User `dthomas@drudge` released the packages in the `pluginlib` repository by running `/usr/bin/bloom-release -t hydro -r hydro pluginlib` on `Fri, 04 Oct 2013 08:05:36 -0000`
 
 The `pluginlib` package was released.
