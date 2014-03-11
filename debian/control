@@ -1,0 +1,12 @@
+Source: ros-hydro-pluginlib
+Section: misc
+Priority: extra
+Maintainer: Esteve Fernandez <esteve@osrfoundation.org>
+Build-Depends: debhelper (>= 7.0.50~), libboost-all-dev, libtinyxml-dev, ros-hydro-catkin (>= 0.5.68), ros-hydro-class-loader, ros-hydro-rosconsole, ros-hydro-roslib
+Homepage: http://www.ros.org/wiki/pluginlib
+Standards-Version: 3.9.2
+
+Package: ros-hydro-pluginlib
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-all-dev, libtinyxml-dev, ros-hydro-class-loader, ros-hydro-rosconsole, ros-hydro-roslib
+Description: The pluginlib package provides tools for writing and dynamically loading plugins using the ROS build infrastructure. To work, these tools require plugin providers to register their plugins in the package.xml of their package.
