@@ -1,3 +1,22 @@
+## pluginlib (hydro) - 1.9.24-0
+
+User `vagrant@precise64` released the packages in the `pluginlib` repository into the `hydro` distro by running `/usr/bin/bloom-release pluginlib --track hydro --rosdistro hydro` on `Tue, 11 Mar 2014 15:23:55 -0000`
+
+The `pluginlib` package was released.
+
+Version of package(s) in repository `pluginlib`:
+- rosdistro version: `1.9.23-0`
+- old version: `1.9.23-0`
+- new version: `1.9.24-0`
+
+Versions of tools used:
+- bloom version: `0.5.1`
+- catkin_pkg version: `0.1.26`
+- rosdep version: `0.10.25`
+- rosdistro version: `0.3.4`
+- vcstools version: `0.1.33`
+
+
 ## pluginlib - 1.9.23-0
 
 User `dthomas@drudge` released the packages in the `pluginlib` repository by running `/usr/bin/bloom-release -r indigo -t indigo pluginlib` on `Wed, 12 Feb 2014 23:33:31 -0000`
