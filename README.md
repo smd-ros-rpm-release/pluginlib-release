@@ -1,3 +1,22 @@
+## pluginlib (indigo) - 1.9.24-0
+
+User `dthomas@drudge` released the packages in the `pluginlib` repository into the `indigo` distro by running `/usr/bin/bloom-release -r indigo -t indigo pluginlib` on `Thu, 13 Mar 2014 21:25:37 -0000`
+
+The `pluginlib` package was released.
+
+Version of package(s) in repository `pluginlib`:
+- rosdistro version: `1.9.23-0`
+- old version: `1.9.23-0`
+- new version: `1.9.24-0`
+
+Versions of tools used:
+- bloom version: `0.5.2`
+- catkin_pkg version: `0.1.26`
+- rosdep version: `0.10.25`
+- rosdistro version: `0.3.4`
+- vcstools version: `0.1.33`
+
+
 ## pluginlib (groovy) - 1.9.24-0
 
 User `dthomas@drudge` released the packages in the `pluginlib` repository into the `groovy` distro by running `/usr/bin/bloom-release -r groovy -t groovy pluginlib` on `Thu, 13 Mar 2014 21:24:50 -0000`
