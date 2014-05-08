@@ -174,12 +174,12 @@ namespace pluginlib
   }
 
   template <class T>
-  std::vector<std::string> ClassLoader<T>::getPluginXmlPaths(const std::string& package, const std::string& attrib_name)
+  std::vector<std::string> ClassLoader<T>::getPluginXmlPaths(const std::string& package, const std::string& attrib_name, bool force_recrawl)
   /***************************************************************************/
   {
     //Pull possible files from manifests of packages which depend on this package and export class
     std::vector<std::string> paths;
-    ros::package::getPlugins(package, attrib_name, paths);
+    ros::package::getPlugins(package, attrib_name, paths, force_recrawl);
     return paths;
   }
 
@@ -247,8 +247,17 @@ namespace pluginlib
     std::vector<std::string> all_paths;
     std::vector<std::string> all_paths_without_extension = getCatkinLibraryPaths();
     all_paths_without_extension.push_back(getROSBuildLibraryPath(exporting_package_name));
-    std::string library_name_with_extension = library_name + class_loader::systemLibrarySuffix();
-    std::string stripped_library_name_with_extension = stripAllButFileFromPath(library_name) + class_loader::systemLibrarySuffix();
+    bool debug_library_suffix = (class_loader::systemLibrarySuffix().compare(0, 1, "d") == 0);
+    std::string non_debug_suffix;
+    if(debug_library_suffix) {
+        non_debug_suffix = class_loader::systemLibrarySuffix().substr(1);
+    } else {
+        non_debug_suffix = class_loader::systemLibrarySuffix();
+    }
+    std::string library_name_with_extension = library_name + non_debug_suffix;
+    std::string stripped_library_name = stripAllButFileFromPath(library_name);
+    std::string stripped_library_name_with_extension = stripped_library_name + non_debug_suffix;
+
     const std::string path_separator = getPathSeparator();
 
     for(unsigned int c = 0; c < all_paths_without_extension.size(); c++)
@@ -256,7 +265,13 @@ namespace pluginlib
       std::string current_path = all_paths_without_extension.at(c);
       all_paths.push_back(current_path + path_separator + library_name_with_extension);
       all_paths.push_back(current_path + path_separator + stripped_library_name_with_extension);
+      // We're in debug mode, try debug libraries as well
+      if(debug_library_suffix) {
+          all_paths.push_back(current_path + path_separator + library_name + class_loader::systemLibrarySuffix());
+          all_paths.push_back(current_path + path_separator + stripped_library_name + class_loader::systemLibrarySuffix());
+      }
     }
+
     return(all_paths);
   }
 
@@ -638,7 +653,7 @@ namespace pluginlib
     }
 
     // add new classes
-    plugin_xml_paths_ = getPluginXmlPaths(package_, attrib_name_);
+    plugin_xml_paths_ = getPluginXmlPaths(package_, attrib_name_, true);
     std::map<std::string, ClassDesc> updated_classes = determineAvailableClasses(plugin_xml_paths_);
     for (std::map<std::string, ClassDesc>::const_iterator it = updated_classes.begin(); it != updated_classes.end(); it++)
     {
