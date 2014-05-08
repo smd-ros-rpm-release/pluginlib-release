@@ -1,3 +1,22 @@
+## pluginlib (indigo) - 1.10.0-0
+
+The packages in the `pluginlib` repository were released into the `indigo` distro by running `/usr/bin/bloom-release pluginlib -r indigo -t indigo` on `Thu, 08 May 2014 21:58:53 -0000`
+
+The `pluginlib` package was released.
+
+Version of package(s) in repository `pluginlib`:
+- rosdistro version: `1.9.25-0`
+- old version: `1.9.25-0`
+- new version: `1.10.0-0`
+
+Versions of tools used:
+- bloom version: `0.5.4`
+- catkin_pkg version: `0.2.1`
+- rosdep version: `0.10.27`
+- rosdistro version: `0.3.5`
+- vcstools version: `0.1.33`
+
+
 ## pluginlib (indigo) - 1.9.25-0
 
 The packages in the `pluginlib` repository were released into the `indigo` distro by running `/usr/bin/bloom-release pluginlib --track indigo --rosdistro indigo` on `Thu, 08 May 2014 18:40:22 -0000`
